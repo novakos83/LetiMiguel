@@ -21,12 +21,12 @@ export const HomeSection: React.FC<HomeSectionProps> = ({ onNavigate }) => {
   const familyMembers = [
     {
       name: 'Leti',
-      role: 'Estilo, Glamour & Interiorismo',
+      role: 'Estilo Moderno, Velas & True Crime',
       icon: '✨',
-      badge: 'Moda & Deco',
+      badge: 'Moda, Velas & Actualidad',
       color: 'from-pink-500 to-rose-400',
       tab: 'leti',
-      desc: 'Diseñadora de la casa de sus sueños, amante de los vestidos elegantes y el maquillaje impecable.'
+      desc: 'Amante de la moda moderna, las velas de lujo, los documentales de crímenes reales y siempre informada de la actualidad. ¡Y enamorada de sus dos peques Nico y Noel!'
     },
     {
       name: 'Miguel',
@@ -61,8 +61,8 @@ export const HomeSection: React.FC<HomeSectionProps> = ({ onNavigate }) => {
     {
       tab: 'leti',
       title: 'El Rincón de Leti',
-      sub: 'Estudio de Interiorismo 3D & Probador de Looks',
-      icon: '🏠',
+      sub: 'Velas Aromáticas, True Crime, Noticias & Moda Moderna',
+      icon: '🕯️',
       gradient: 'from-pink-900/40 to-slate-900 border-pink-500/30 text-pink-300'
     },
     {

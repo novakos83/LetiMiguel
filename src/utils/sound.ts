@@ -244,6 +244,40 @@ class SoundEffects {
     });
   }
 
+  // Mystery chime for Leti's True Crime investigations
+  public playMysteryChime() {
+    if (!this.enabled) return;
+    this.initCtx();
+    if (!this.ctx) return;
+
+    try {
+      const osc1 = this.ctx.createOscillator();
+      const osc2 = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc1.type = 'sine';
+      osc2.type = 'triangle';
+
+      // Minor second / tritone eerie chord
+      osc1.frequency.setValueAtTime(311.13, this.ctx.currentTime); // Eb4
+      osc2.frequency.setValueAtTime(440.00, this.ctx.currentTime); // A4 (tritone / diabolus in musica)
+
+      gain.gain.setValueAtTime(0.35, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+
+      osc1.connect(gain);
+      osc2.connect(gain);
+      gain.connect(this.ctx.destination);
+
+      osc1.start();
+      osc2.start();
+      osc1.stop(this.ctx.currentTime + 1.2);
+      osc2.stop(this.ctx.currentTime + 1.2);
+    } catch (e) {
+      // ignore
+    }
+  }
+
   // Subtle tap feedback
   public playDing() {
     if (!this.enabled) return;
@@ -268,3 +302,4 @@ class SoundEffects {
 }
 
 export const sounds = new SoundEffects();
+

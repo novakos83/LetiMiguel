@@ -18,7 +18,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, setActiveTab, onOpenQ
 
   const tabs = [
     { id: 'home', label: 'Inicio', icon: '🏠', color: 'from-amber-400 to-orange-500' },
-    { id: 'leti', label: 'Leti', sub: 'Moda & Deco', icon: '✨', color: 'from-pink-500 to-rose-400' },
+    { id: 'leti', label: 'Leti', sub: 'Velas & True Crime', icon: '🕯️', color: 'from-pink-500 to-rose-400' },
     { id: 'miguel', label: 'Miguel', sub: 'Tech & Drones', icon: '🛸', color: 'from-cyan-500 to-blue-500' },
     { id: 'kids', label: 'Nico & Noel', sub: 'Zona Peques', icon: '🎈', color: 'from-emerald-400 to-teal-500' },
     { id: 'quiz', label: 'Pareja', sub: 'Duelo Leti & Miguel', icon: '❤️', color: 'from-purple-500 to-indigo-500' },

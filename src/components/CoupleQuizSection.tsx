@@ -15,57 +15,57 @@ export const CoupleQuizSection: React.FC = () => {
   const questions: Question[] = [
     {
       id: 1,
-      question: '¿Quién es más probable que compre algo en el móvil a las 2:00 AM?',
-      context: '¿Leti con un vestido rebajado o Miguel con un sensor para el dron?',
-      letiEmoji: '👗',
-      miguelEmoji: '📦',
+      question: '¿Quién descubre antes al culpable cuando ven una serie o documental de True Crime?',
+      context: 'La mente analítica de Leti investigando pistas vs Miguel mirando cómo grabaron el plano con la cámara',
+      letiEmoji: '🕵️‍♀️',
+      miguelEmoji: '🎥',
     },
     {
       id: 2,
-      question: '¿Quién tarda más en estar listo cuando hay que salir corriendo con Nico y Noel?',
-      context: 'El debate eterno antes de cruzar la puerta de casa',
-      letiEmoji: '💄',
-      miguelEmoji: '🔋',
+      question: '¿Quién está más al día de las noticias de última hora, política y actualidad del mundo?',
+      context: 'El telediario, los debates y las tertulias vs las noticias de lanzamientos tecnológicos en YouTube',
+      letiEmoji: '📰',
+      miguelEmoji: '💻',
     },
     {
       id: 3,
-      question: '¿Quién tiene más paciencia montando muebles de Ikea o desenredando cables?',
-      context: 'Tornillos sobrantes vs llaves Allen de precisión',
-      letiEmoji: '📐',
-      miguelEmoji: '🛠️',
+      question: '¿Quién es más adicto a encender velas que huelen a gloria por toda la casa?',
+      context: 'Aromas a vainilla, higo y cedro para crear el ambiente zen definitivo',
+      letiEmoji: '🕯️',
+      miguelEmoji: '🔌',
     },
     {
       id: 4,
-      question: '¿Quién se compraría un gadget carísimo con la excusa de "es para hacer recuerdos de los niños"?',
-      context: 'Cámara 4K, lente 50mm f/1.2 o dron FPV estabilizado',
-      letiEmoji: '📱',
-      miguelEmoji: '📷',
+      question: '¿Quién tiene un estilo más moderno vistiendo (blazer oversize, sneakers trendy)?',
+      context: 'Street-style de pasarela vs la camiseta de siempre para soldar placas en el taller',
+      letiEmoji: '🕶️',
+      miguelEmoji: '👕',
     },
     {
       id: 5,
-      question: '¿Quién se levanta más rápido como un resorte si Noel llora por la noche?',
-      context: 'El superpoder de padres ninja en la madrugada',
+      question: '¿Quién se derrite más rápido cuando Nico (3) y Noel (1) hacen una carantoña o travesura?',
+      context: 'Imposible enfadarse con esos dos terremotos adorables',
       letiEmoji: '🤱',
-      miguelEmoji: '🍼',
+      miguelEmoji: '🧸',
     },
     {
       id: 6,
-      question: '¿Quién tiene mejor ojo para la decoración y estética de la casa?',
-      context: 'Guerra entre minimalismo chic o poner estanterías llenas de cacharros',
+      question: '¿Quién se compraría un gadget o accesorio con la excusa de "es para la casa o los niños"?',
+      context: 'Un difusor chic o vestido vs un dron 4K o una Raspberry Pi',
       letiEmoji: '✨',
-      miguelEmoji: '🤖',
+      miguelEmoji: '🛸',
     },
     {
       id: 7,
-      question: '¿Quién pierde más a menudo las llaves de casa o el mando de la tele?',
-      context: 'El misterio de los objetos desaparecidos en el sofá',
+      question: '¿Quién pierde más a menudo las llaves de casa, el móvil o el cargador?',
+      context: 'El misterio sin resolver más habitual del salón',
       letiEmoji: '👜',
       miguelEmoji: '🔍',
     },
     {
       id: 8,
-      question: '¿Quién es el anfitrión más detallista cuando vienen amigos de visita?',
-      context: '¡Como la visita que tenéis en casa hoy!',
+      question: '¿Quién es el anfitrión más atento y detallista cuando reciben a los amigos hoy en casa?',
+      context: '¡Como en la visita especial de hoy!',
       letiEmoji: '🥂',
       miguelEmoji: '🍕',
     },
@@ -111,10 +111,9 @@ export const CoupleQuizSection: React.FC = () => {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      // Completed!
       sounds.playVictory();
       confetti({ particleCount: 120, spread: 100 });
-      setCurrentIndex(questions.length); // trigger end screen
+      setCurrentIndex(questions.length);
     }
   };
 
@@ -157,7 +156,6 @@ export const CoupleQuizSection: React.FC = () => {
       {/* QUIZ INTERACTIVE CARD */}
       {currentIndex < questions.length ? (
         <div className="bg-slate-900/95 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl space-y-6">
-          {/* Progress bar */}
           <div className="flex items-center justify-between text-xs text-slate-400">
             <span className="font-bold text-purple-400">Pregunta {currentIndex + 1} de {questions.length}</span>
             <div className="w-32 sm:w-48 h-2 bg-slate-800 rounded-full overflow-hidden">
@@ -168,7 +166,6 @@ export const CoupleQuizSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Question Text */}
           <div className="text-center py-4 space-y-2">
             <h3 className="text-xl sm:text-3xl font-extrabold text-white font-display leading-tight max-w-2xl mx-auto">
               “{currentQ.question}”
@@ -178,7 +175,6 @@ export const CoupleQuizSection: React.FC = () => {
             </p>
           </div>
 
-          {/* Voting Panels */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             {/* LETI VOTE COLUMN */}
             <div className="bg-pink-950/20 border-2 border-pink-500/30 rounded-3xl p-5 space-y-4">
@@ -271,7 +267,6 @@ export const CoupleQuizSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Reveal & Resolution Area */}
           <div className="pt-2 text-center">
             {!revealed ? (
               <button
@@ -303,7 +298,7 @@ export const CoupleQuizSection: React.FC = () => {
                   <p className="text-xs mt-1 text-slate-300">
                     {currentVote.letiVote === currentVote.miguelVote
                       ? 'No hay dudas en esta casa: ¡sincronización absoluta de pareja!'
-                      : '¡El invitado tiene que actuar de juez imparcial ahora mismo!'}
+                      : '¡El amigo de visita tiene que actuar de juez imparcial ahora mismo!'}
                   </p>
                 </div>
 
@@ -318,7 +313,6 @@ export const CoupleQuizSection: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* QUIZ SUMMARY SCREEN */
         <div className="bg-slate-900/95 rounded-3xl p-8 border border-purple-500/30 shadow-2xl text-center space-y-6">
           <div className="text-6xl animate-bounce-slow">🏆</div>
           <h3 className="text-3xl font-black text-white font-display">
@@ -331,7 +325,7 @@ export const CoupleQuizSection: React.FC = () => {
           <div className="bg-slate-800/60 p-4 rounded-2xl max-w-xs mx-auto border border-slate-700 text-center">
             <div className="text-xs text-slate-400 uppercase font-semibold">Diagnóstico del Amigo Visitante:</div>
             <div className="text-base font-bold text-pink-300 mt-1">
-              {agreementCount >= 5 ? '¡Pareja 10/10 en perfecta armonía!' : '¡Mucho salseo y risas aseguradas en esta casa!'}
+              {agreementCount >= 5 ? '¡Pareja 10/10 en perfecta sintonía!' : '¡Mucho salseo y risas garantizadas en esta casa!'}
             </div>
           </div>
 
