@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Sparkles, Palette, Home, Heart, RefreshCw, Check, Share2, Compass, Layers, ShoppingBag } from 'lucide-react';
+import { Sparkles, Palette, Home, Heart, RefreshCw, Check, Share2, Compass, Layers, ShoppingBag, Eye } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sounds } from '../utils/sound';
 
@@ -14,12 +14,12 @@ interface RoomConfig {
 }
 
 export const LetiSection: React.FC = () => {
-  const [subTab, setSubTab] = useState<'decor' | 'fashion' | 'wishlist'>('decor');
+  const [subTab, setSubTab] = useState<'decor' | 'fashion' | 'makeup' | 'wishlist'>('decor');
 
   // Room Designer State
   const [room, setRoom] = useState<RoomConfig>({
     roomType: 'Salón Principal',
-    wallColor: '#F5EBE6', // Warm linen
+    wallColor: '#F5EBE6',
     furniture: 'Sofá Bouclé Curvo Blanco',
     art: 'Galería Abstracta Orgánica Minimal',
     plant: 'Monstera Deliciosa XXL',
@@ -64,7 +64,6 @@ export const LetiSection: React.FC = () => {
     { name: 'Apliques de Pared con Luz Indirecta Cálida', icon: '🕯️' },
   ];
 
-  // Random preset generator
   const handleRandomRoom = () => {
     sounds.playSparkle();
     const randomColor = wallColors[Math.floor(Math.random() * wallColors.length)];
@@ -95,11 +94,11 @@ export const LetiSection: React.FC = () => {
   const [occasion, setOccasion] = useState('visita');
   const outfits: Record<string, { title: string; dress: string; shoes: string; bag: string; makeup: string; vibe: string }> = {
     visita: {
-      title: 'Anfitriona Casual Chic (Para la visita de mañana)',
+      title: 'Anfitriona Casual Chic (Para la visita de amigos)',
       dress: 'Vestido midi fluido de punto acanalado en tono arena o lino con caída perfecta',
       shoes: 'Mules destalonadas de piel suave o zapatillas blancas impecables',
       bag: 'Tote bag estructurado de diseño minimalista',
-      makeup: 'Piel efecto glow ' + '“glazed donut”',
+      makeup: 'Piel efecto glow “glazed donut” con rubor melocotón',
       vibe: 'Elegante sin esfuerzo, cómoda para estar con los peques y recibir con estilo.'
     },
     evento: {
@@ -130,7 +129,32 @@ export const LetiSection: React.FC = () => {
 
   const currentOutfit = outfits[occasion] || outfits.visita;
 
-  // Leti's wishlist state
+  // MAKEUP STUDIO STATE
+  const [selectedLipstick, setSelectedLipstick] = useState({ name: 'Nude Velvet Glaze', hex: '#C2847A', finish: 'Satinado Hidratante' });
+  const [selectedBlush, setSelectedBlush] = useState({ name: 'Melocotón Dorado', hex: '#E29578', finish: 'Efecto Buena Cara' });
+  const [selectedShadow, setSelectedShadow] = useState({ name: 'Champagne Shimmer', hex: '#D4AF37', finish: 'Brillo Sutil' });
+
+  const lipsticks = [
+    { name: 'Nude Velvet Glaze', hex: '#C2847A', finish: 'Satinado Elegante' },
+    { name: 'Ruby Rouge Clásico', hex: '#A31D24', finish: 'Mate Sedoso' },
+    { name: 'Frambuesa Silvestre', hex: '#B23A48', finish: 'Jugo Natural' },
+    { name: 'Terracota Cálido', hex: '#BD6B56', finish: 'Otoño Chic' },
+    { name: 'Gloss Rosado Glow', hex: '#E5989B', finish: 'Efecto Volumen' },
+  ];
+
+  const blushes = [
+    { name: 'Melocotón Dorado', hex: '#E29578', finish: 'Efecto Buena Cara' },
+    { name: 'Rosa Empolvado', hex: '#E8A598', finish: 'Natural Fresco' },
+    { name: 'Berry Flush Suave', hex: '#C86D7C', finish: 'Juventud & Vida' },
+  ];
+
+  const shadows = [
+    { name: 'Champagne Shimmer', hex: '#D4AF37', finish: 'Luz Radiante' },
+    { name: 'Tierra Tostada Mate', hex: '#8C5E45', finish: 'Profundidad Mirada' },
+    { name: 'Rose Gold Néctar', hex: '#B76E79', finish: 'Toque Sofisticado' },
+  ];
+
+  // Wishlist state
   const [wishlist, setWishlist] = useState([
     { id: 1, text: 'Espejo de cuerpo entero con marco dorado estilo vintage', checked: true, tag: 'Deco' },
     { id: 2, text: 'Vestido de lino fresco para las próximas vacaciones', checked: false, tag: 'Moda' },
@@ -162,10 +186,10 @@ export const LetiSection: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               onClick={() => { sounds.playDing(); setSubTab('decor'); }}
-              className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
+              className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
                 subTab === 'decor'
                   ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30'
                   : 'bg-slate-800/80 text-pink-200 hover:bg-slate-800'
@@ -175,7 +199,7 @@ export const LetiSection: React.FC = () => {
             </button>
             <button
               onClick={() => { sounds.playDing(); setSubTab('fashion'); }}
-              className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
+              className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
                 subTab === 'fashion'
                   ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30'
                   : 'bg-slate-800/80 text-pink-200 hover:bg-slate-800'
@@ -184,8 +208,18 @@ export const LetiSection: React.FC = () => {
               👗 Style & Outfits
             </button>
             <button
+              onClick={() => { sounds.playDing(); setSubTab('makeup'); }}
+              className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
+                subTab === 'makeup'
+                  ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30'
+                  : 'bg-slate-800/80 text-pink-200 hover:bg-slate-800'
+              }`}
+            >
+              💄 Beauty Bar
+            </button>
+            <button
               onClick={() => { sounds.playDing(); setSubTab('wishlist'); }}
-              className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
+              className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-semibold transition-all ${
                 subTab === 'wishlist'
                   ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-lg shadow-pink-500/30'
                   : 'bg-slate-800/80 text-pink-200 hover:bg-slate-800'
@@ -200,7 +234,6 @@ export const LetiSection: React.FC = () => {
       {/* SUBTAB 1: DECOR STUDIO */}
       {subTab === 'decor' && (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Visual Staging Preview */}
           <div className="lg:col-span-7 bg-slate-900/90 rounded-3xl p-5 border border-slate-800 shadow-xl space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -215,15 +248,12 @@ export const LetiSection: React.FC = () => {
               </button>
             </div>
 
-            {/* Room canvas representation */}
             <div 
               className="relative rounded-2xl p-6 transition-all duration-500 shadow-inner overflow-hidden border border-white/20 min-h-[320px] flex flex-col justify-between"
               style={{ backgroundColor: room.wallColor }}
             >
-              {/* Floor base line */}
               <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-stone-400/40 to-transparent pointer-events-none border-b-8 border-stone-600/30"></div>
 
-              {/* Upper Wall Art & Lamp */}
               <div className="relative z-10 flex justify-between items-start">
                 <div className="bg-white/85 backdrop-blur-md px-3.5 py-2 rounded-2xl shadow-md border border-white/40 max-w-[200px]">
                   <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Cuadro / Arte</div>
@@ -236,9 +266,7 @@ export const LetiSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Center Scene Icons / Composition */}
               <div className="relative z-10 my-4 flex items-end justify-around py-4">
-                {/* Plant */}
                 <div className="text-center group cursor-pointer transition-transform hover:scale-110">
                   <div className="text-5xl filter drop-shadow-lg">🪴</div>
                   <div className="text-[10px] font-bold text-slate-800 bg-white/70 px-2 py-0.5 rounded-full mt-1 backdrop-blur-xs max-w-[90px] truncate mx-auto">
@@ -246,7 +274,6 @@ export const LetiSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Furniture Main Piece */}
                 <div className="text-center group cursor-pointer transition-transform hover:scale-105">
                   <div className="text-7xl filter drop-shadow-xl animate-float">🛋️</div>
                   <div className="text-xs font-extrabold text-slate-900 bg-white/90 px-3 py-1 rounded-full mt-1.5 shadow-sm border border-stone-200">
@@ -254,7 +281,6 @@ export const LetiSection: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Decor Accent */}
                 <div className="text-center group cursor-pointer transition-transform hover:scale-110">
                   <div className="text-5xl filter drop-shadow-lg">🌾</div>
                   <div className="text-[10px] font-bold text-slate-800 bg-white/70 px-2 py-0.5 rounded-full mt-1 backdrop-blur-xs max-w-[90px] truncate mx-auto">
@@ -263,13 +289,11 @@ export const LetiSection: React.FC = () => {
                 </div>
               </div>
 
-              {/* Rug Bottom */}
               <div className="relative z-10 bg-white/85 backdrop-blur-md px-4 py-2 rounded-xl text-center shadow-sm border border-white/40 max-w-sm mx-auto">
                 <span className="text-xs font-semibold text-slate-700">Base: {room.rug}</span>
               </div>
             </div>
 
-            {/* Room specs summary card */}
             <div className="bg-slate-800/60 rounded-2xl p-4 border border-slate-700/60 flex items-center justify-between">
               <div>
                 <p className="text-xs text-slate-400">Paleta seleccionada:</p>
@@ -294,9 +318,7 @@ export const LetiSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Controls Panel */}
           <div className="lg:col-span-5 space-y-4">
-            {/* Wall Color selector */}
             <div className="bg-slate-900/90 rounded-3xl p-5 border border-slate-800 space-y-3">
               <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
                 1. Tono de Pared / Pintura
@@ -324,7 +346,6 @@ export const LetiSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Furniture selector */}
             <div className="bg-slate-900/90 rounded-3xl p-5 border border-slate-800 space-y-3">
               <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
                 2. Pieza Central / Sofá
@@ -356,7 +377,6 @@ export const LetiSection: React.FC = () => {
               </div>
             </div>
 
-            {/* Accents selector */}
             <div className="bg-slate-900/90 rounded-3xl p-5 border border-slate-800 space-y-3">
               <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
                 3. Vegetación & Arte
@@ -387,10 +407,9 @@ export const LetiSection: React.FC = () => {
       {/* SUBTAB 2: FASHION & OUTFITS */}
       {subTab === 'fashion' && (
         <div className="space-y-6">
-          {/* Occasion selector tabs */}
           <div className="flex flex-wrap gap-2">
             {[
-              { id: 'visita', label: '👋 Visita Amigos Mañana', emoji: '🥂' },
+              { id: 'visita', label: '👋 Visita Amigos', emoji: '🥂' },
               { id: 'evento', label: '💃 Noche Romántica', emoji: '✨' },
               { id: 'parque', label: '👶 Tarde con Nico & Noel', emoji: '🧸' },
               { id: 'brunch', label: '🥐 Brunch & Deco Shopping', emoji: '🌿' },
@@ -413,7 +432,6 @@ export const LetiSection: React.FC = () => {
             ))}
           </div>
 
-          {/* Outfit breakdown card */}
           <div className="bg-slate-900/95 rounded-3xl p-6 sm:p-8 border border-pink-500/20 shadow-xl space-y-6">
             <div className="border-b border-slate-800 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <div>
@@ -462,7 +480,170 @@ export const LetiSection: React.FC = () => {
         </div>
       )}
 
-      {/* SUBTAB 3: WISHLIST */}
+      {/* SUBTAB 3: BEAUTY & MAKEUP SWATCH STUDIO */}
+      {subTab === 'makeup' && (
+        <div className="bg-slate-900/95 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+            <div>
+              <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                <span>💄</span> Beauty Swatch Studio de Leti
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Prueba tonos de labiales, coloretes y sombras para encontrar el combo glow perfecto
+              </p>
+            </div>
+            <button
+              onClick={() => {
+                sounds.playSparkle();
+                const rLip = lipsticks[Math.floor(Math.random() * lipsticks.length)];
+                const rBlush = blushes[Math.floor(Math.random() * blushes.length)];
+                const rShad = shadows[Math.floor(Math.random() * shadows.length)];
+                setSelectedLipstick(rLip);
+                setSelectedBlush(rBlush);
+                setSelectedShadow(rShad);
+                confetti({ particleCount: 25, spread: 50 });
+              }}
+              className="px-3.5 py-1.5 rounded-xl bg-pink-500/20 text-pink-300 border border-pink-500/30 text-xs font-bold hover:bg-pink-500/30 transition-all flex items-center gap-1.5"
+            >
+              <RefreshCw size={13} /> Mezcla Mágica
+            </button>
+          </div>
+
+          {/* Harmonized Palette Preview Card */}
+          <div className="bg-slate-950 p-6 rounded-3xl border border-pink-500/30 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <span className="text-[10px] uppercase font-extrabold tracking-widest text-pink-400 bg-pink-500/10 px-2.5 py-1 rounded-full border border-pink-500/20">
+                PALETA DE COLOR ACTUAL
+              </span>
+              <h4 className="text-xl font-black text-white font-display">
+                Glow Radiante • Leti Signature Look
+              </h4>
+              <p className="text-xs text-slate-400 max-w-sm">
+                Combinación suave y sofisticada que realza la piel con acabado luminoso y labios sedosos.
+              </p>
+            </div>
+
+            {/* Live Color Swatches */}
+            <div className="flex items-center gap-4">
+              <div className="text-center space-y-1.5">
+                <div
+                  className="w-14 h-14 rounded-2xl shadow-lg border-2 border-white/40 flex items-center justify-center text-xl transition-transform hover:scale-110"
+                  style={{ backgroundColor: selectedLipstick.hex }}
+                >
+                  💄
+                </div>
+                <div className="text-[10px] font-bold text-slate-300 truncate w-16">{selectedLipstick.name.split(' ')[0]}</div>
+                <div className="text-[9px] text-pink-400 font-mono">{selectedLipstick.hex}</div>
+              </div>
+
+              <div className="text-center space-y-1.5">
+                <div
+                  className="w-14 h-14 rounded-2xl shadow-lg border-2 border-white/40 flex items-center justify-center text-xl transition-transform hover:scale-110"
+                  style={{ backgroundColor: selectedBlush.hex }}
+                >
+                  🌸
+                </div>
+                <div className="text-[10px] font-bold text-slate-300 truncate w-16">{selectedBlush.name.split(' ')[0]}</div>
+                <div className="text-[9px] text-pink-400 font-mono">{selectedBlush.hex}</div>
+              </div>
+
+              <div className="text-center space-y-1.5">
+                <div
+                  className="w-14 h-14 rounded-2xl shadow-lg border-2 border-white/40 flex items-center justify-center text-xl transition-transform hover:scale-110"
+                  style={{ backgroundColor: selectedShadow.hex }}
+                >
+                  ✨
+                </div>
+                <div className="text-[10px] font-bold text-slate-300 truncate w-16">{selectedShadow.name.split(' ')[0]}</div>
+                <div className="text-[9px] text-pink-400 font-mono">{selectedShadow.hex}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Palette selector controls */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Lipsticks */}
+            <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-700/60 space-y-2.5">
+              <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span>💄</span> Labiales
+              </div>
+              <div className="space-y-1.5">
+                {lipsticks.map((lip) => (
+                  <button
+                    key={lip.hex}
+                    onClick={() => { sounds.playBubblePop(); setSelectedLipstick(lip); }}
+                    className={`w-full p-2 rounded-xl border text-left flex items-center justify-between transition-all ${
+                      selectedLipstick.hex === lip.hex
+                        ? 'bg-pink-500/10 border-pink-500 text-pink-200'
+                        : 'border-slate-700 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full border border-black/30" style={{ backgroundColor: lip.hex }}></span>
+                      <span className="text-xs font-semibold">{lip.name}</span>
+                    </div>
+                    {selectedLipstick.hex === lip.hex && <Check size={14} className="text-pink-400" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Blushes */}
+            <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-700/60 space-y-2.5">
+              <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span>🌸</span> Coloretes
+              </div>
+              <div className="space-y-1.5">
+                {blushes.map((b) => (
+                  <button
+                    key={b.hex}
+                    onClick={() => { sounds.playBubblePop(); setSelectedBlush(b); }}
+                    className={`w-full p-2 rounded-xl border text-left flex items-center justify-between transition-all ${
+                      selectedBlush.hex === b.hex
+                        ? 'bg-pink-500/10 border-pink-500 text-pink-200'
+                        : 'border-slate-700 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full border border-black/30" style={{ backgroundColor: b.hex }}></span>
+                      <span className="text-xs font-semibold">{b.name}</span>
+                    </div>
+                    {selectedBlush.hex === b.hex && <Check size={14} className="text-pink-400" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Shadows */}
+            <div className="bg-slate-800/40 p-4 rounded-2xl border border-slate-700/60 space-y-2.5">
+              <div className="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                <span>✨</span> Sombras & Iluminador
+              </div>
+              <div className="space-y-1.5">
+                {shadows.map((s) => (
+                  <button
+                    key={s.hex}
+                    onClick={() => { sounds.playBubblePop(); setSelectedShadow(s); }}
+                    className={`w-full p-2 rounded-xl border text-left flex items-center justify-between transition-all ${
+                      selectedShadow.hex === s.hex
+                        ? 'bg-pink-500/10 border-pink-500 text-pink-200'
+                        : 'border-slate-700 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="w-4 h-4 rounded-full border border-black/30" style={{ backgroundColor: s.hex }}></span>
+                      <span className="text-xs font-semibold">{s.name}</span>
+                    </div>
+                    {selectedShadow.hex === s.hex && <Check size={14} className="text-pink-400" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SUBTAB 4: WISHLIST */}
       {subTab === 'wishlist' && (
         <div className="bg-slate-900/95 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-slate-800 pb-4">

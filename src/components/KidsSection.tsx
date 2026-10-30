@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Sparkles, Heart, Smile, Music, Star, Volume2 } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Sparkles, Heart, Smile, Music, Star, Volume2, Lock, Unlock } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sounds } from '../utils/sound';
 
@@ -18,10 +18,13 @@ export const KidsSection: React.FC = () => {
   const [kidMode, setKidMode] = useState<'nico' | 'noel'>('nico');
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
   const [poppedCount, setPoppedCount] = useState(0);
+  const [toddlerLock, setToddlerLock] = useState(false);
+  const [unlockProgress, setUnlockProgress] = useState(0);
+  const unlockTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // Floating bubbles loop for toddlers
   useEffect(() => {
-    const emojis = ['🎈', '⭐', '🛸', '🧸', '🌈', '🍭', '🚗', '🐱', '✨', '🍼'];
+    const emojis = ['🎈', '⭐', '🛸', '🧸', '🌈', '🍭', '🚗', '🐱', '✨', '🍼', '🐶', '🍦'];
     const colors = [
       'from-pink-400 to-rose-500',
       'from-cyan-400 to-blue-500',
@@ -32,12 +35,12 @@ export const KidsSection: React.FC = () => {
 
     const interval = setInterval(() => {
       setBubbles((prev) => {
-        if (prev.length > 14) return prev; // Keep screen smooth
+        if (prev.length > (toddlerLock ? 18 : 12)) return prev;
         const newBubble: Bubble = {
           id: Date.now() + Math.random(),
-          x: 10 + Math.random() * 80, // %
-          y: 110, // Start below bottom
-          size: 55 + Math.random() * 35,
+          x: 10 + Math.random() * 80,
+          y: 110,
+          size: toddlerLock ? 70 + Math.random() * 40 : 55 + Math.random() * 35,
           color: colors[Math.floor(Math.random() * colors.length)],
           icon: emojis[Math.floor(Math.random() * emojis.length)],
           speed: 0.6 + Math.random() * 0.8,
@@ -45,10 +48,10 @@ export const KidsSection: React.FC = () => {
         };
         return [...prev, newBubble];
       });
-    }, 900);
+    }, 800);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [toddlerLock]);
 
   // Float animation tick
   useEffect(() => {
@@ -56,7 +59,7 @@ export const KidsSection: React.FC = () => {
       setBubbles((prev) =>
         prev
           .map((b) => ({ ...b, y: b.y - b.speed }))
-          .filter((b) => b.y > -20 && !b.popped)
+          .filter((b) => b.y > -25 && !b.popped)
       );
     }, 40);
     return () => clearInterval(anim);
@@ -70,17 +73,16 @@ export const KidsSection: React.FC = () => {
 
     setPoppedCount((c) => c + 1);
 
-    // Confetti at pointer
     const rect = (event.target as HTMLElement).getBoundingClientRect();
     const x = (rect.left + rect.width / 2) / window.innerWidth;
     const y = (rect.top + rect.height / 2) / window.innerHeight;
 
     confetti({
-      particleCount: 18,
-      spread: 45,
-      startVelocity: 18,
+      particleCount: 22,
+      spread: 55,
+      startVelocity: 20,
       origin: { x, y },
-      colors: ['#38bdf8', '#f472b6', '#fbbf24', '#34d399'],
+      colors: ['#38bdf8', '#f472b6', '#fbbf24', '#34d399', '#a855f7'],
     });
 
     setBubbles((prev) =>
@@ -110,6 +112,108 @@ export const KidsSection: React.FC = () => {
     setTimeout(() => setActiveSpeech(null), 1200);
   };
 
+  // Hold-to-unlock mechanism for parents
+  const startUnlock = () => {
+    let p = 0;
+    unlockTimerRef.current = setInterval(() => {
+      p += 10;
+      setUnlockProgress(p);
+      if (p >= 100) {
+        if (unlockTimerRef.current) clearInterval(unlockTimerRef.current);
+        setToddlerLock(false);
+        setUnlockProgress(0);
+        sounds.playVictory();
+      }
+    }, 120);
+  };
+
+  const cancelUnlock = () => {
+    if (unlockTimerRef.current) {
+      clearInterval(unlockTimerRef.current);
+      unlockTimerRef.current = null;
+    }
+    setUnlockProgress(0);
+  };
+
+  // FULLSCREEN TODDLER LOCK MODE
+  if (toddlerLock) {
+    return (
+      <div className="fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between p-4 overflow-hidden select-none touch-tap">
+        {/* Top bar with safety unlock */}
+        <div className="flex items-center justify-between bg-slate-900/90 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-700">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">👶</span>
+            <span className="text-xs font-bold text-emerald-400">
+              Modo Bebé Activo • {kidMode === 'nico' ? 'Nico (3 años)' : 'Noel (1 año)'}
+            </span>
+          </div>
+
+          {/* Hold to unlock */}
+          <div className="relative">
+            <button
+              onPointerDown={startUnlock}
+              onPointerUp={cancelUnlock}
+              onPointerLeave={cancelUnlock}
+              className="px-3 py-1.5 rounded-xl bg-slate-800 text-slate-300 border border-slate-600 text-xs font-bold flex items-center gap-1.5 active:bg-slate-700"
+            >
+              <Lock size={13} className="text-amber-400" />
+              <span>Mantén pulsado para salir ({unlockProgress}%)</span>
+            </button>
+            {unlockProgress > 0 && (
+              <div
+                className="absolute bottom-0 left-0 h-1 bg-amber-400 rounded-full transition-all"
+                style={{ width: `${unlockProgress}%` }}
+              ></div>
+            )}
+          </div>
+        </div>
+
+        {/* Sensory touch play area */}
+        <div className="relative flex-1 w-full overflow-hidden">
+          {bubbles.map((b) => (
+            <div
+              key={b.id}
+              onPointerDown={(e) => handlePopBubble(b.id, b.icon, e)}
+              className="absolute cursor-pointer select-none active:scale-125 transition-transform touch-tap"
+              style={{
+                left: `${b.x}%`,
+                top: `${b.y}%`,
+                width: `${b.size}px`,
+                height: `${b.size}px`,
+              }}
+            >
+              <div
+                className={`w-full h-full rounded-full bg-gradient-to-tr ${b.color} shadow-2xl flex items-center justify-center border-4 border-white/80 animate-pulse-slow`}
+              >
+                <span className="text-4xl filter drop-shadow-md pointer-events-none">{b.icon}</span>
+              </div>
+            </div>
+          ))}
+
+          {activeSpeech && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 pointer-events-none bg-yellow-400 text-slate-950 font-black text-3xl px-8 py-3 rounded-full shadow-2xl animate-bounce border-4 border-white">
+              {activeSpeech}
+            </div>
+          )}
+        </div>
+
+        {/* Chunky Bottom Sound Bar */}
+        <div className="grid grid-cols-4 gap-2">
+          {soundCards.slice(0, 4).map((card, idx) => (
+            <button
+              key={idx}
+              onPointerDown={() => handleCardPress(card)}
+              className={`p-3 rounded-2xl border-2 flex flex-col items-center justify-center gap-1 active:scale-95 transition-transform ${card.bg}`}
+            >
+              <span className="text-3xl">{card.emoji}</span>
+              <span className="text-[11px] font-black text-white truncate max-w-full">{card.title}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Hero Banner Kids */}
@@ -128,10 +232,10 @@ export const KidsSection: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => { sounds.playDing(); setKidMode('nico'); }}
-              className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+              className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
                 kidMode === 'nico'
                   ? 'bg-gradient-to-r from-emerald-400 to-teal-500 text-slate-950 shadow-lg shadow-emerald-500/30 font-black'
                   : 'bg-slate-800 text-emerald-200'
@@ -141,7 +245,7 @@ export const KidsSection: React.FC = () => {
             </button>
             <button
               onClick={() => { sounds.playDing(); setKidMode('noel'); }}
-              className={`px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+              className={`px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
                 kidMode === 'noel'
                   ? 'bg-gradient-to-r from-pink-400 to-rose-400 text-slate-950 shadow-lg shadow-pink-500/30 font-black'
                   : 'bg-slate-800 text-pink-200'
@@ -149,13 +253,22 @@ export const KidsSection: React.FC = () => {
             >
               🍼 Noel (1 año)
             </button>
+            <button
+              onClick={() => {
+                sounds.playVictory();
+                setToddlerLock(true);
+              }}
+              className="px-3.5 py-2 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-300 text-xs font-bold hover:bg-amber-500/30 transition-all flex items-center gap-1.5"
+              title="Bloquea la pantalla para que los peques jueguen sin salir de la app"
+            >
+              <Lock size={14} /> Modo Bebé Lock
+            </button>
           </div>
         </div>
       </div>
 
-      {/* SENSORY BUBBLES PLAYGROUND (Interactive Pop Game) */}
+      {/* SENSORY BUBBLES PLAYGROUND */}
       <div className="relative rounded-3xl overflow-hidden border-2 border-emerald-500/30 bg-gradient-to-b from-slate-950 via-slate-900 to-teal-950/40 p-4 min-h-[380px] shadow-2xl select-none touch-tap">
-        {/* Top scoreboard & instructions */}
         <div className="flex items-center justify-between z-20 relative bg-slate-900/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-slate-700/80">
           <div className="flex items-center gap-2">
             <span className="text-2xl animate-bounce-slow">🫧</span>
@@ -175,14 +288,12 @@ export const KidsSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Speech popup if any card pressed */}
         {activeSpeech && (
           <div className="absolute top-20 left-1/2 -translate-x-1/2 z-30 pointer-events-none bg-yellow-400 text-slate-950 font-black text-xl px-6 py-2 rounded-full shadow-2xl animate-bounce border-2 border-white">
             {activeSpeech}
           </div>
         )}
 
-        {/* Floating Interactive Bubbles */}
         <div className="relative w-full h-[280px] sm:h-[320px] overflow-hidden">
           {bubbles.map((b) => (
             <div
@@ -204,7 +315,6 @@ export const KidsSection: React.FC = () => {
             </div>
           ))}
 
-          {/* Gentle background decorative elements */}
           <div className="absolute bottom-2 left-4 text-xs text-slate-500 pointer-events-none">
             👶 Diseñado con cariño para manitas de 1 a 3 años
           </div>

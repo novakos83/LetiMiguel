@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Cpu, Camera, Play, RotateCcw, Zap, Sparkles, Award, Sliders, Eye, RefreshCw, Download } from 'lucide-react';
+import { Cpu, Camera, Play, RotateCcw, Zap, Sparkles, Award, Sliders, Eye, RefreshCw, Download, SlidersHorizontal, Image } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sounds } from '../utils/sound';
 
@@ -16,14 +16,12 @@ export const MiguelSection: React.FC = () => {
     return parseInt(localStorage.getItem('miguel_drone_highscore') || '0', 10);
   });
 
-  // Controls state
   const keys = useRef<{ left: boolean; right: boolean; up: boolean }>({
     left: false,
     right: false,
     up: false
   });
 
-  // Game loop references
   useEffect(() => {
     if (!gameActive) return;
 
@@ -36,7 +34,6 @@ export const MiguelSection: React.FC = () => {
     let localBattery = 100;
     let localScore = 0;
 
-    // Drone physics
     const drone = {
       x: canvas.width / 2,
       y: canvas.height / 2,
@@ -50,7 +47,6 @@ export const MiguelSection: React.FC = () => {
       friction: 0.96,
     };
 
-    // Collectibles (lenses, sd cards, batteries)
     interface Collectible {
       x: number;
       y: number;
@@ -74,7 +70,6 @@ export const MiguelSection: React.FC = () => {
 
     for (let i = 0; i < 4; i++) spawnItem();
 
-    // Floating obstacles (soft clouds/birds)
     const clouds = [
       { x: 50, y: 70, speed: 0.4, r: 24 },
       { x: 220, y: 150, speed: -0.5, r: 30 },
@@ -87,7 +82,6 @@ export const MiguelSection: React.FC = () => {
       const dt = (currentTime - lastTime) / 1000;
       lastTime = currentTime;
 
-      // Handle Inputs
       if (keys.current.up) {
         drone.vy -= drone.thrust;
         drone.angle = Math.max(-0.25, Math.min(0.25, drone.angle));
@@ -107,14 +101,12 @@ export const MiguelSection: React.FC = () => {
         drone.angle *= 0.9;
       }
 
-      // Physics integration
       drone.vy += drone.gravity;
       drone.vx *= drone.friction;
       drone.vy *= drone.friction;
       drone.x += drone.vx;
       drone.y += drone.vy;
 
-      // Boundaries
       if (drone.x < 24) { drone.x = 24; drone.vx *= -0.5; }
       if (drone.x > canvas.width - 24) { drone.x = canvas.width - 24; drone.vx *= -0.5; }
       if (drone.y < 24) { drone.y = 24; drone.vy = 0; }
@@ -123,7 +115,6 @@ export const MiguelSection: React.FC = () => {
         drone.vy = -drone.vy * 0.4;
       }
 
-      // Battery drain
       localBattery = Math.max(0, localBattery - dt * 0.8);
       setBattery(Math.round(localBattery));
 
@@ -139,11 +130,9 @@ export const MiguelSection: React.FC = () => {
         return;
       }
 
-      // Render Background
       ctx.fillStyle = '#090d16';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Grid tech overlay
       ctx.strokeStyle = 'rgba(6, 182, 212, 0.08)';
       ctx.lineWidth = 1;
       for (let x = 0; x < canvas.width; x += 30) {
@@ -159,7 +148,6 @@ export const MiguelSection: React.FC = () => {
         ctx.stroke();
       }
 
-      // Render Obstacles (clouds)
       ctx.fillStyle = 'rgba(148, 163, 184, 0.25)';
       clouds.forEach(c => {
         c.x += c.speed;
@@ -172,16 +160,13 @@ export const MiguelSection: React.FC = () => {
         ctx.fill();
       });
 
-      // Render Collectibles
       for (let i = items.length - 1; i >= 0; i--) {
         const item = items[i];
         item.bob += 0.05;
         const drawY = item.y + Math.sin(item.bob) * 4;
 
-        // Collision detection
         const dist = Math.hypot(drone.x - item.x, drone.y - drawY);
         if (dist < item.radius + 18) {
-          // Collected!
           sounds.playBubblePop();
           if (item.type === 'battery') {
             localBattery = Math.min(100, localBattery + 30);
@@ -198,7 +183,6 @@ export const MiguelSection: React.FC = () => {
           continue;
         }
 
-        // Draw item
         ctx.save();
         ctx.translate(item.x, drawY);
         if (item.type === 'battery') {
@@ -235,18 +219,15 @@ export const MiguelSection: React.FC = () => {
         ctx.restore();
       }
 
-      // Draw Drone (FPV Quadcopter)
       ctx.save();
       ctx.translate(drone.x, drone.y);
       ctx.rotate(drone.angle);
 
-      // Central Body
       ctx.fillStyle = '#334155';
       ctx.fillRect(-14, -6, 28, 12);
       ctx.fillStyle = '#06b6d4';
-      ctx.fillRect(-4, -4, 8, 8); // Cam lens
+      ctx.fillRect(-4, -4, 8, 8);
 
-      // Arms
       ctx.strokeStyle = '#64748b';
       ctx.lineWidth = 3;
       ctx.beginPath();
@@ -256,7 +237,6 @@ export const MiguelSection: React.FC = () => {
       ctx.lineTo(18, -12);
       ctx.stroke();
 
-      // Rotors (spinning effect)
       const propTime = currentTime * 0.05;
       const propWidth = 14 * Math.abs(Math.sin(propTime));
       ctx.strokeStyle = keys.current.up ? '#22d3ee' : '#94a3b8';
@@ -271,7 +251,6 @@ export const MiguelSection: React.FC = () => {
         });
       });
 
-      // Front LED (camera indicator)
       ctx.fillStyle = '#ef4444';
       ctx.beginPath();
       ctx.arc(14, 0, 2.5, 0, Math.PI * 2);
@@ -298,7 +277,6 @@ export const MiguelSection: React.FC = () => {
     setGameActive(true);
   };
 
-  // Keyboard listeners
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['ArrowUp', 'KeyW', 'Space'].includes(e.code)) keys.current.up = true;
@@ -370,19 +348,28 @@ export const MiguelSection: React.FC = () => {
     confetti({ particleCount: 30, spread: 60, origin: { y: 0.6 } });
   };
 
-  // ==================== CAMERA VIEWFINDER STATE ====================
+  // ==================== CAMERA VIEWFINDER & FILM SIMULATIONS ====================
   const [aperture, setAperture] = useState('f/1.4');
   const [iso, setIso] = useState('400');
   const [shutter, setShutter] = useState('1/500s');
-  const [camFacing, setCamFacing] = useState<'user' | 'environment'>('environment');
+  const [filmSim, setFilmSim] = useState<'standard' | 'leica' | 'fuji' | 'cinestill' | 'vintage'>('fuji');
+
+  const filmSimulations = [
+    { id: 'standard', name: 'Color Natural (Standard)', filterCss: 'none', desc: 'Fiel a la realidad' },
+    { id: 'leica', name: 'Leica Monochrom B&W', filterCss: 'grayscale(100%) contrast(140%) brightness(95%)', desc: 'Blanco y negro dramático' },
+    { id: 'fuji', name: 'Fuji Classic Chrome', filterCss: 'sepia(15%) saturate(85%) contrast(110%)', desc: 'Tonos suaves de documental' },
+    { id: 'cinestill', name: 'CineStill 800T (Cine)', filterCss: 'hue-rotate(-15deg) contrast(120%) saturate(125%)', desc: 'Estética cinematográfica' },
+    { id: 'vintage', name: 'Vintage 35mm Warmth', filterCss: 'sepia(35%) contrast(105%) brightness(105%) saturate(120%)', desc: 'Calidez nostálgica' },
+  ];
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
-  const [photoSnapped, setPhotoSnapped] = useState<string | null>(null);
+  const [lastPhoto, setLastPhoto] = useState<string | null>(null);
 
   const startCameraStream = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: camFacing }
+        video: { facingMode: 'environment' }
       });
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
@@ -390,7 +377,7 @@ export const MiguelSection: React.FC = () => {
         setCameraActive(true);
       }
     } catch (err) {
-      alert('Para usar el visor real, concede permiso a la cámara o usa la simulación de lente');
+      alert('Para usar el visor con tu cámara real, concede permiso a la cámara.');
     }
   };
 
@@ -405,25 +392,57 @@ export const MiguelSection: React.FC = () => {
 
   const snapPhoto = () => {
     sounds.playCameraShutter();
-    if (videoRef.current && cameraActive) {
-      const canvas = document.createElement('canvas');
-      canvas.width = videoRef.current.videoWidth || 640;
-      canvas.height = videoRef.current.videoHeight || 480;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.drawImage(videoRef.current, 0, 0);
-        // Add watermark
-        ctx.fillStyle = '#06b6d4';
-        ctx.font = '20px sans-serif';
-        ctx.fillText(`MIGUEL LAB • ${aperture} ISO${iso} ${shutter}`, 20, canvas.height - 25);
-        setPhotoSnapped(canvas.toDataURL('image/jpeg'));
-      }
-    } else {
-      // Fake snapshot preview for testing
-      setPhotoSnapped('simulated');
+    const currentSim = filmSimulations.find(f => f.id === filmSim);
+
+    const canvas = document.createElement('canvas');
+    canvas.width = 1280;
+    canvas.height = 720;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    if (currentSim && currentSim.filterCss !== 'none') {
+      ctx.filter = currentSim.filterCss;
     }
-    confetti({ particleCount: 40, spread: 70 });
+
+    if (videoRef.current && cameraActive) {
+      ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+    } else {
+      // Create a photographic test pattern for Miguel
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#1e293b';
+      ctx.fillRect(40, 40, canvas.width - 80, canvas.height - 80);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.font = 'bold 50px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('MIGUEL OPTICS & LAB', canvas.width / 2, canvas.height / 2 - 20);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '28px sans-serif';
+      ctx.fillText(`Simulación: ${currentSim?.name}`, canvas.width / 2, canvas.height / 2 + 35);
+    }
+
+    // Reset filter for watermark text
+    ctx.filter = 'none';
+    ctx.fillStyle = '#06b6d4';
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'left';
+    ctx.fillText(`MIGUEL LAB • ${aperture} • ${shutter} • ISO ${iso} • [${currentSim?.name}]`, 40, canvas.height - 40);
+
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+    setLastPhoto(dataUrl);
+
+    // Auto download prompt
+    const link = document.createElement('a');
+    link.download = `miguel-photo-${filmSim}.jpg`;
+    link.href = dataUrl;
+    link.click();
+
+    confetti({ particleCount: 50, spread: 70 });
   };
+
+  const currentSimConfig = filmSimulations.find(f => f.id === filmSim) || filmSimulations[0];
 
   return (
     <div className="space-y-6">
@@ -439,7 +458,7 @@ export const MiguelSection: React.FC = () => {
               Cacharrero Mayor & Piloto FPV
             </h2>
             <p className="text-sm text-cyan-200/80 max-w-xl mt-1">
-              Pilota el dron de carreras, inventa gadgets imposibles y captura fotos con visor réflex profesional.
+              Pilota el dron de carreras, inventa gadgets imposibles y captura fotos con recetas de simulación de película.
             </p>
           </div>
 
@@ -511,7 +530,6 @@ export const MiguelSection: React.FC = () => {
             </div>
           </div>
 
-          {/* Canvas Arcade Area */}
           <div className="relative rounded-2xl overflow-hidden border border-cyan-500/30 bg-slate-950 flex justify-center items-center">
             <canvas
               ref={canvasRef}
@@ -520,7 +538,6 @@ export const MiguelSection: React.FC = () => {
               className="w-full max-w-[640px] aspect-video object-contain"
             />
 
-            {/* Overlay if not active */}
             {!gameActive && (
               <div className="absolute inset-0 bg-slate-950/80 backdrop-blur-xs flex flex-col items-center justify-center p-6 text-center z-20">
                 {gameOver ? (
@@ -554,7 +571,6 @@ export const MiguelSection: React.FC = () => {
             )}
           </div>
 
-          {/* On-screen touch controls for Mobile Phones */}
           <div className="bg-slate-950/60 p-4 rounded-2xl border border-slate-800 flex items-center justify-between gap-3 select-none touch-tap">
             <div className="flex gap-2">
               <button
@@ -609,7 +625,6 @@ export const MiguelSection: React.FC = () => {
             </button>
           </div>
 
-          {/* Invention card */}
           <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-cyan-950/40 p-6 rounded-3xl border border-cyan-500/30 space-y-5">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-extrabold uppercase tracking-widest text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/20">
@@ -653,7 +668,7 @@ export const MiguelSection: React.FC = () => {
               <button
                 onClick={() => {
                   sounds.playSparkle();
-                  alert('Leti ha visto el presupuesto del invento: "Miguel, ¿otra placa base más?" 😂');
+                  alert('Leti ha visto el presupuesto del invento: "¿Miguel, otra placa base más?" 😂');
                 }}
                 className="px-4 py-2 rounded-xl bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-xs font-semibold text-pink-300 transition-all flex items-center gap-1.5"
               >
@@ -664,17 +679,17 @@ export const MiguelSection: React.FC = () => {
         </div>
       )}
 
-      {/* SUBTAB 3: CAMERA VIEWFINDER */}
+      {/* SUBTAB 3: CAMERA VIEWFINDER & FILM SIMULATIONS */}
       {subTab === 'camera' && (
         <div className="bg-slate-900/95 rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
             <div>
               <h3 className="text-xl font-bold text-white flex items-center gap-2">
                 <Camera className="text-cyan-400" size={22} />
-                Visor Réflex & Modo Fotografía de Miguel
+                Visor Réflex & Recetas de Simulación de Película
               </h3>
               <p className="text-xs text-slate-400 mt-1">
-                Ajusta parámetros profesionales y captura el momento de la visita
+                Ajusta parámetros profesionales y aplica perfiles fotográficos (Leica, Fuji Classic Chrome, CineStill)
               </p>
             </div>
 
@@ -684,7 +699,7 @@ export const MiguelSection: React.FC = () => {
                   onClick={startCameraStream}
                   className="px-4 py-2 rounded-2xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-xs font-bold hover:bg-cyan-500/30 transition-all flex items-center gap-1.5"
                 >
-                  <Eye size={15} /> Activar Cámara del Móvil
+                  <Eye size={15} /> Activar Cámara Real
                 </button>
               ) : (
                 <button
@@ -697,29 +712,60 @@ export const MiguelSection: React.FC = () => {
             </div>
           </div>
 
+          {/* Film simulation selector pills */}
+          <div className="space-y-2">
+            <div className="text-xs uppercase font-extrabold text-slate-400 tracking-wider">
+              Receta de Color / Simulación:
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {filmSimulations.map((sim) => (
+                <button
+                  key={sim.id}
+                  onClick={() => { sounds.playDing(); setFilmSim(sim.id as any); }}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all ${
+                    filmSim === sim.id
+                      ? 'bg-cyan-500 text-slate-950 shadow-md shadow-cyan-500/20 scale-105'
+                      : 'bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600'
+                  }`}
+                >
+                  {sim.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {/* Camera Viewfinder Frame */}
           <div className="relative rounded-3xl overflow-hidden bg-black border-2 border-slate-700 aspect-video flex items-center justify-center max-w-2xl mx-auto shadow-2xl">
             {cameraActive ? (
-              <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                style={{ filter: currentSimConfig.filterCss }}
+                className="w-full h-full object-cover transition-all duration-300"
+              />
             ) : (
-              <div className="text-center p-6 space-y-2">
+              <div
+                style={{ filter: currentSimConfig.filterCss }}
+                className="w-full h-full flex flex-col items-center justify-center p-6 text-center space-y-2 bg-slate-950 transition-all duration-300"
+              >
                 <div className="text-6xl text-slate-600">📷</div>
-                <div className="text-sm font-semibold text-slate-400">Modo Visor Réflex Standby</div>
-                <div className="text-xs text-slate-500">Pulsa 'Activar Cámara' o pulsa el disparador para una prueba</div>
+                <div className="text-sm font-semibold text-slate-300">Modo Visor Réflex • {currentSimConfig.name}</div>
+                <div className="text-xs text-slate-500">Pulsa 'Activar Cámara Real' o haz un disparo de prueba</div>
               </div>
             )}
 
             {/* Viewfinder Overlays (Rule of thirds grid + HUD) */}
             <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
-              {/* Top HUD */}
-              <div className="flex justify-between items-center text-[11px] font-mono font-bold text-cyan-400 bg-black/40 backdrop-blur-xs px-3 py-1 rounded-full border border-cyan-500/20 max-w-fit mx-auto">
-                <span className="mr-3">AF-C [99 PTS]</span>
+              <div className="flex justify-between items-center text-[11px] font-mono font-bold text-cyan-400 bg-black/60 backdrop-blur-xs px-3.5 py-1.5 rounded-full border border-cyan-500/30 max-w-fit mx-auto shadow-sm">
+                <span className="mr-3 text-emerald-400">AF-C [99 PTS]</span>
                 <span className="mr-3 text-white">{aperture}</span>
                 <span className="mr-3 text-white">{shutter}</span>
-                <span className="text-emerald-400">ISO {iso}</span>
+                <span className="mr-3 text-amber-300">ISO {iso}</span>
+                <span className="text-cyan-300">[{filmSim.toUpperCase()}]</span>
               </div>
 
-              {/* Grid 3x3 */}
               <div className="absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none opacity-20">
                 <div className="border-r border-b border-white"></div>
                 <div className="border-r border-b border-white"></div>
@@ -734,18 +780,17 @@ export const MiguelSection: React.FC = () => {
                 <div></div>
               </div>
 
-              {/* Bottom HUD */}
               <div className="flex justify-between items-end text-[10px] font-mono text-slate-400">
-                <span>RAW + FINE • 4K 60FPS</span>
-                <span className="text-rose-400 font-bold">REC ● READY</span>
+                <span>SENSOR FULL-FRAME • 4K 60P</span>
+                <span className="text-rose-400 font-bold">● STANDBY READY</span>
               </div>
             </div>
 
-            {/* Shutter button inside frame */}
+            {/* Shutter button */}
             <button
               onClick={snapPhoto}
-              className="absolute bottom-5 right-5 pointer-events-auto w-14 h-14 rounded-full bg-white/90 hover:bg-white active:scale-95 transition-all shadow-xl flex items-center justify-center border-4 border-slate-900 group"
-              title="Disparar foto"
+              className="absolute bottom-5 right-5 pointer-events-auto w-14 h-14 rounded-full bg-white/95 hover:bg-white active:scale-95 transition-all shadow-2xl flex items-center justify-center border-4 border-slate-900 group"
+              title="Disparar foto con filtro aplicado"
             >
               <div className="w-10 h-10 rounded-full bg-slate-900 group-hover:scale-90 transition-transform"></div>
             </button>
