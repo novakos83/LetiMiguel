@@ -41,7 +41,14 @@ Una aplicación web interactiva, moderna y diseñada con mucho mimo para **Leti*
 
 ---
 
-## 🚀 Cómo probarla ahora mismo en tu equipo
+## 🌐 Enlace Oficial en GitHub Pages
+
+La app ya está publicada y lista para usar en:
+👉 **[https://novakos83.github.io/LetiMiguel/](https://novakos83.github.io/LetiMiguel/)**
+
+---
+
+## 🚀 Cómo probarla en local (opcional)
 
 1. Ejecuta el servidor de desarrollo:
 ```bash
